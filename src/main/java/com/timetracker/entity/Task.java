@@ -1,6 +1,5 @@
 package com.timetracker.entity;
 
-import com.timetracker.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -19,19 +18,24 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "task_id")
     private Integer id;
 
     @NotEmpty(message = "provide a name")
+    @Column(name = "task_name")
     private String name;
 
+    @Column(name = "task_start_time")
     private Long startTime;
+    @Column(name = "task_start_date")
     private LocalDateTime startDate;
-
+    @Column(name = "task_end_time")
     private Long endTime;
+    @Column(name = "task_end_date")
     private LocalDateTime endDate;
-    private Status status;
+    @Column(name = "task_status")
+    private String status;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id")
-    private List<Employee> assignedUsers;
+    private List<Employee> assignedEmployees;
 }
