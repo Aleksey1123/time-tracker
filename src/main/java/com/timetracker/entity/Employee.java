@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Entity
-@Table(name = "employee")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +24,8 @@ public class Employee {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Task currentTask;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "history_id", referencedColumnName = "id")
+    private History history;
 }

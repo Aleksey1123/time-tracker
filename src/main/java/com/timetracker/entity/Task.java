@@ -12,7 +12,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "task")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Task {
@@ -36,6 +35,9 @@ public class Task {
             orphanRemoval = true
     )
     private List<Employee> assignedEmployees = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private History history;
 
     public void addEmployee(Employee employee) {
         assignedEmployees.add(employee);
