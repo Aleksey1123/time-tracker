@@ -34,7 +34,7 @@ public class Task {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Employee> assignedEmployees = new ArrayList<>();
+    private List<Employee> assignedEmployees;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private History history;
