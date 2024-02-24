@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,9 +36,22 @@ class TaskServiceImplTest {
     @InjectMocks
     private TaskServiceImpl taskService;
 
+    private Task testTask;
+    private TaskDTO testDTOTask;
+
 
     @BeforeEach
     void setUp() {
+
+        testTask = Task.builder()
+                .id(1)
+                .name("testTask")
+                .build();
+
+        testDTOTask = TaskDTO.builder()
+                .id(1)
+                .name("testDTOTask")
+                .build();
     }
 
     @Test
@@ -51,5 +65,13 @@ class TaskServiceImplTest {
         Page<TaskDTO> dtoTasks = taskService.getAllTasks(0, 0, "id");
 
         assertEquals(1, dtoTasks.getSize());
+    }
+
+    @Test
+    void getTaskById() {
+        when(taskRepository.findById(1)).thenReturn(Optional.of(testTask));
+        TaskDTO actualTaskDTO = taskService.getTaskById("1");
+        
+        assertEquals(testTask.getName(), actualTaskDTO.getName());
     }
 }

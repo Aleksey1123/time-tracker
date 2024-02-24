@@ -6,4 +6,6 @@ import org.springframework.data.domain.Page;
 public interface TaskService {
 
     Page<TaskDTO> getAllTasks(Integer pageNumber, Integer pageSize, String sortingParam);
+
+    TaskDTO getTaskById(String id);
 }
