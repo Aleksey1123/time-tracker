@@ -2,6 +2,7 @@ package com.timetracker.service;
 
 import com.timetracker.entity.Task;
 import com.timetracker.enums.EntityNames;
+import com.timetracker.exception.TaskNotFoundException;
 import com.timetracker.mapper.TaskMapper;
 import com.timetracker.model.TaskDTO;
 import com.timetracker.repository.TaskRepository;
@@ -71,7 +72,14 @@ class TaskServiceImplTest {
     void getTaskById() {
         when(taskRepository.findById(1)).thenReturn(Optional.of(testTask));
         TaskDTO actualTaskDTO = taskService.getTaskById("1");
-        
+
         assertEquals(testTask.getName(), actualTaskDTO.getName());
+    }
+
+    @Test
+    void getTaskByIdNotFound() {
+        when(taskRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById("1"));
     }
 }
