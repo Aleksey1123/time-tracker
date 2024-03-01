@@ -1,11 +1,9 @@
 package com.timetracker.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.timetracker.entity.Employee;
 import com.timetracker.entity.Task;
 import com.timetracker.enums.EntityNames;
 import com.timetracker.enums.Status;
+import com.timetracker.exception.TaskAlreadyExistsException;
 import com.timetracker.exception.TaskNotFoundException;
 import com.timetracker.model.TaskDTO;
 import com.timetracker.repository.TaskRepository;
@@ -15,29 +13,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
@@ -57,13 +46,15 @@ class TaskServiceImplTest {
     void setUp() {
 
         testTask = Task.builder()
-                .id(1)
+                .id(100)
                 .name("testTask")
+                .status(Status.CREATED.name())
                 .build();
 
         testDTOTask = TaskDTO.builder()
-                .id(1)
+                .id(100)
                 .name("testTask")
+                .status(Status.CREATED.name())
                 .build();
     }
 
@@ -96,13 +87,52 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void postTask() throws Exception {
+    void saveNewTask() {
 
-        given(taskRepository.save(testTask)).willReturn(testTask);
-        System.out.println(taskRepository);
+        given(taskRepository.findByName(any())).willReturn(Optional.empty());
+        given(taskRepository.save(any())).willReturn(testTask);
 
-        Task savedTask = taskService.postTask(testDTOTask);
-        System.out.println(savedTask + "!!!!!!!!!!!!!!!!");
+        Task savedTask = taskService.saveNewTask(testDTOTask);
         assertThat(savedTask).isNotNull();
+    }
+
+    @Test
+    void saveNewTaskAlreadyExists() {
+
+        given(taskRepository.findByName(any())).willReturn(Optional.of(testTask));
+
+        assertThrows(TaskAlreadyExistsException.class, () -> taskService.saveNewTask(testDTOTask));
+    }
+
+    @Test
+    void deleteTaskById() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+
+        Task savedTask = taskService.deleteTaskById(1);
+        assertThat(savedTask).isNotNull();
+    }
+
+    @Test
+    void deleteTaskByIdNotFound() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.empty());
+
+        assertThrows(TaskNotFoundException.class, () -> taskService.deleteTaskById(1));
+    }
+
+    @Test
+    void updateTaskById() {
+
+        TaskDTO newDTOTask = TaskDTO.builder()
+                .name("newTask")
+                .status(Status.STARTED.name())
+                .build();
+
+        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+
+        Task savedTask = taskService.updateTaskById(1, newDTOTask);
+        assertEquals(newDTOTask.getName(), savedTask.getName());
+        assertEquals(newDTOTask.getStatus(), savedTask.getStatus());
     }
 }

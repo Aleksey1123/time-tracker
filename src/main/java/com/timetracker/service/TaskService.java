@@ -10,5 +10,9 @@ public interface TaskService {
 
     TaskDTO getTaskById(String id);
 
-    Task postTask(TaskDTO taskDTO);
+    Task saveNewTask(TaskDTO taskDTO);
+
+    Task deleteTaskById(Integer taskId);
+
+    Task updateTaskById(Integer taskId, TaskDTO taskDTO);
 }
