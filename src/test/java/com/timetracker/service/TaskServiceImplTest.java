@@ -1,38 +1,50 @@
 package com.timetracker.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.timetracker.entity.Employee;
 import com.timetracker.entity.Task;
 import com.timetracker.enums.EntityNames;
+import com.timetracker.enums.Status;
 import com.timetracker.exception.TaskNotFoundException;
-import com.timetracker.mapper.TaskMapper;
 import com.timetracker.model.TaskDTO;
 import com.timetracker.repository.TaskRepository;
 import com.timetracker.sorting.PageBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
+@ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
 
     @Mock
     private TaskRepository taskRepository;
-    @Spy
+    @Mock
     private PageBuilder pageBuilder;
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -51,7 +63,7 @@ class TaskServiceImplTest {
 
         testDTOTask = TaskDTO.builder()
                 .id(1)
-                .name("testDTOTask")
+                .name("testTask")
                 .build();
     }
 
@@ -81,5 +93,16 @@ class TaskServiceImplTest {
         when(taskRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById("1"));
+    }
+
+    @Test
+    void postTask() throws Exception {
+
+        given(taskRepository.save(testTask)).willReturn(testTask);
+        System.out.println(taskRepository);
+
+        Task savedTask = taskService.postTask(testDTOTask);
+        System.out.println(savedTask + "!!!!!!!!!!!!!!!!");
+        assertThat(savedTask).isNotNull();
     }
 }
