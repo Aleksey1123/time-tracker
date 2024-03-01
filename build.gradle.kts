@@ -18,11 +18,19 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.2")
-    implementation("org.springframework.data:spring-data-jpa:3.2.2")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.2")
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.2.2")
+    implementation("org.mapstruct:mapstruct:1.6.0.Beta1")
     implementation("org.postgresql:postgresql:42.7.1")
 
+
     compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.0.Beta1")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito:mockito-core:5.10.0")
+
 }
 
 tasks.withType<Test> {
