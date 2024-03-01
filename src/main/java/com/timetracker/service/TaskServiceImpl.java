@@ -2,6 +2,7 @@ package com.timetracker.service;
 
 import com.timetracker.entity.Task;
 import com.timetracker.enums.EntityNames;
+import com.timetracker.enums.Status;
 import com.timetracker.exception.TaskNotFoundException;
 import com.timetracker.mapper.TaskMapper;
 import com.timetracker.model.TaskDTO;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,5 +47,15 @@ public class TaskServiceImpl implements TaskService {
         if (optionalTask.isEmpty())
             throw new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE);
         return optionalTask.map(taskMapper::taskToTaskDTO).get();
+    }
+
+    @Override
+    public Task postTask(TaskDTO taskDTO) {
+
+        Task task = taskMapper.taskDTOToTask(taskDTO);
+        task.setStartDate(LocalDateTime.now());
+        task.setStatus(Status.CREATED.name());
+
+        return taskRepository.save(task);
     }
 }
