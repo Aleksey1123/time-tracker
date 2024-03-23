@@ -1,7 +1,6 @@
 package com.timetracker.service;
 
 import com.timetracker.entity.Task;
-import com.timetracker.enums.EntityNames;
 import com.timetracker.enums.Status;
 import com.timetracker.exception.TaskAlreadyExistsException;
 import com.timetracker.exception.TaskNotFoundException;
@@ -14,18 +13,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,10 +58,11 @@ class TaskServiceImplTest {
     @Test
     void getAllTasks() {
         Page<Task> tasks = new PageImpl<>(List.of(Task.builder().build()));
-        PageRequest pageRequest = pageBuilder.buildPageRequest(0, 0,
-                "id", EntityNames.Task.name());
 
-        when(taskRepository.findAll(pageRequest)).thenReturn(tasks);
+        when(pageBuilder.buildPageRequest(any(), any(), any(), any()))
+                .thenReturn(PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "id")));
+
+        when(taskRepository.findAll((Pageable) any())).thenReturn(tasks);
 
         Page<TaskDTO> dtoTasks = taskService.getAllTasks(0, 0, "id");
 

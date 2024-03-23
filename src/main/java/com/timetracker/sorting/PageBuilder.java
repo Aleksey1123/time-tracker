@@ -5,12 +5,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Component
 public class PageBuilder {
 
+    // page number
     private static final int DEFAULT_PAGE = 0;
+
+    // is a maximum size of the page
     private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final Set<String> EMPLOYEE_FIELDS = Set.of("id", "firstName", "lastName");
@@ -22,28 +26,31 @@ public class PageBuilder {
 
     public PageRequest buildPageRequest(Integer pageNumber, Integer pageSize,
                                         String sortingParam, String entityName) {
-        int queryPageNumber = pageNumber;
-        int queryPageSize = pageSize;
+
+        int queryPageNumber = DEFAULT_PAGE;
+        int queryPageSize = DEFAULT_PAGE_SIZE;
+        StringBuilder querySortingParam = new StringBuilder();
+
+        querySortingParam.append(Objects.requireNonNullElse(sortingParam, "id"));
 
         if (ENTITIES.contains(entityName)) {
-            if ((entityName.equals(EntityNames.Employee.name()) && !EMPLOYEE_FIELDS.contains(sortingParam)) ||
-                    (entityName.equals(EntityNames.Task.name()) && !TASK_FIELDS.contains(sortingParam)) ||
-                    (entityName.equals(EntityNames.History.name()) && !HISTORY_FIELDS.contains(sortingParam)))
+            if ((entityName.equals(EntityNames.Employee.name()) && !EMPLOYEE_FIELDS.contains(querySortingParam.toString())) ||
+                    (entityName.equals(EntityNames.Task.name()) && !TASK_FIELDS.contains(querySortingParam.toString())) ||
+                    (entityName.equals(EntityNames.History.name()) && !HISTORY_FIELDS.contains(querySortingParam.toString())))
                 throw new IllegalStateException("Unexpected value: " + sortingParam +
                         "for class " + entityName);
         }
 
-        if (pageNumber > 0) {
-            queryPageNumber -= 1;
-        }
-        else queryPageNumber = DEFAULT_PAGE;
+        // in case pageNumber is null adding null check
+        if (pageNumber != null && pageNumber > DEFAULT_PAGE)
+            queryPageNumber = pageNumber - 1;
 
-        if (pageSize > DEFAULT_PAGE_SIZE || pageSize == 0) {
-            queryPageSize = DEFAULT_PAGE_SIZE;
-        }
+        // in case pageSize is null adding null check
+        if (pageSize != null && pageSize > 0 && pageSize < DEFAULT_PAGE_SIZE)
+            queryPageSize = pageSize;
 
         return PageRequest.of(queryPageNumber,
                 queryPageSize,
-                Sort.by(Sort.Direction.ASC, sortingParam));
+                Sort.by(Sort.Direction.ASC, querySortingParam.toString()));
     }
 }
