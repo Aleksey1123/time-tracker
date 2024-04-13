@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/employee")
+@RequestMapping("/api/v1/tasks")
 @RequiredArgsConstructor
 public class TaskController {
 
@@ -24,7 +24,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public TaskDTO getTaskById(@PathVariable String taskId) {
+    public TaskDTO getTaskById(@PathVariable Integer taskId) {
 
         return taskService.getTaskById(taskId);
     }
