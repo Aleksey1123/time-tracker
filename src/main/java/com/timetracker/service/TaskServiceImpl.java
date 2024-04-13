@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +30,14 @@ public class TaskServiceImpl implements TaskService {
     private static final String TASK_ALREADY_EXISTS_EXC_MESSAGE = "task already exists, provide a different name";
 
     @Override
+    public Task findTaskOrThrowNotFoundException(Integer taskId) {
+
+        return taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE)
+        );
+    }
+
+    @Override
     public Page<TaskDTO> getAllTasks(Integer pageNumber, Integer pageSize,
                                      String sortingParam) {
         PageRequest pageRequest = pageBuilder.buildPageRequest(pageNumber, pageSize,
@@ -43,43 +50,40 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO getTaskById(String id) {
+    public TaskDTO getTaskById(Integer taskId) {
 
-        Optional<Task> optionalTask = taskRepository.findById(Integer.parseInt(id));
-        if (optionalTask.isEmpty())
-            throw new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE);
-        return optionalTask.map(taskMapper::taskToTaskDTO).get();
+        Task foundTask = findTaskOrThrowNotFoundException(taskId);
+        return taskMapper.taskToTaskDTO(foundTask);
     }
 
+    // request body consists of task name and status
     @Override
     public Task saveNewTask(TaskDTO taskDTO) {
 
+        // check whether task with such name already exist
         if (taskRepository.findByName(taskDTO.getName()).isPresent())
             throw new TaskAlreadyExistsException(TASK_ALREADY_EXISTS_EXC_MESSAGE);
 
         Task task = taskMapper.taskDTOToTask(taskDTO);
         task.setStartDate(LocalDateTime.now());
         task.setStatus(Status.CREATED.name());
-
         return taskRepository.save(task);
     }
 
     @Override
     public Task deleteTaskById(Integer taskId) {
 
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (taskOptional.isEmpty())
-            throw new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE);
+        Task foundTask = findTaskOrThrowNotFoundException(taskId);
         taskRepository.deleteById(taskId);
-        return taskOptional.get();
+        return foundTask;
     }
 
     @Override
     public Task updateTaskById(Integer taskId, TaskDTO taskDTO) {
 
-        Task foundTask = taskRepository.findById(taskId).orElseThrow(TaskNotFoundException::new);
+        Task foundTask = findTaskOrThrowNotFoundException(taskId);
         foundTask.setName(taskDTO.getName());
         foundTask.setStatus(taskDTO.getStatus());
-        return foundTask;
+        return taskRepository.save(foundTask);
     }
 }

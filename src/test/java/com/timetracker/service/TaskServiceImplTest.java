@@ -71,17 +71,17 @@ class TaskServiceImplTest {
 
     @Test
     void getTaskById() {
-        when(taskRepository.findById(1)).thenReturn(Optional.of(testTask));
-        TaskDTO actualTaskDTO = taskService.getTaskById("1");
+        when(taskRepository.findById(testTask.getId())).thenReturn(Optional.of(testTask));
+        TaskDTO actualTaskDTO = taskService.getTaskById(testTask.getId());
 
         assertEquals(testTask.getName(), actualTaskDTO.getName());
     }
 
     @Test
     void getTaskByIdNotFound() {
-        when(taskRepository.findById(1)).thenReturn(Optional.empty());
+        when(taskRepository.findById(testTask.getId())).thenReturn(Optional.empty());
 
-        assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById("1"));
+        assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById(testTask.getId()));
     }
 
     @Test
@@ -105,18 +105,18 @@ class TaskServiceImplTest {
     @Test
     void deleteTaskById() {
 
-        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+        given(taskRepository.findById(testTask.getId())).willReturn(Optional.of(testTask));
 
-        Task savedTask = taskService.deleteTaskById(1);
-        assertThat(savedTask).isNotNull();
+        Task deletedTask = taskService.deleteTaskById(testTask.getId());
+        assertThat(deletedTask).isNotNull();
     }
 
     @Test
     void deleteTaskByIdNotFound() {
 
-        given(taskRepository.findById(1)).willReturn(Optional.empty());
+        given(taskRepository.findById(testTask.getId())).willReturn(Optional.empty());
 
-        assertThrows(TaskNotFoundException.class, () -> taskService.deleteTaskById(1));
+        assertThrows(TaskNotFoundException.class, () -> taskService.deleteTaskById(testTask.getId()));
     }
 
     @Test
@@ -127,9 +127,10 @@ class TaskServiceImplTest {
                 .status(Status.STARTED.name())
                 .build();
 
-        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+        given(taskRepository.findById(testTask.getId())).willReturn(Optional.of(testTask));
+        given(taskRepository.save(any(Task.class))).willReturn(testTask);
 
-        Task savedTask = taskService.updateTaskById(1, newDTOTask);
+        Task savedTask = taskService.updateTaskById(testTask.getId(), newDTOTask);
         assertEquals(newDTOTask.getName(), savedTask.getName());
         assertEquals(newDTOTask.getStatus(), savedTask.getStatus());
     }

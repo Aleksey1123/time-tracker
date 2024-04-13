@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 
 public interface TaskService {
 
+    Task findTaskOrThrowNotFoundException(Integer taskId);
+
     Page<TaskDTO> getAllTasks(Integer pageNumber, Integer pageSize, String sortingParam);
 
-    TaskDTO getTaskById(String id);
+    TaskDTO getTaskById(Integer id);
 
     Task saveNewTask(TaskDTO taskDTO);
 
