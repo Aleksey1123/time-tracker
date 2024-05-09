@@ -72,7 +72,7 @@ class TaskServiceImplTest {
     @Test
     void getTaskById() {
         when(taskRepository.findById(1)).thenReturn(Optional.of(testTask));
-        TaskDTO actualTaskDTO = taskService.getTaskById("1");
+        TaskDTO actualTaskDTO = taskService.getTaskById(1);
 
         assertEquals(testTask.getName(), actualTaskDTO.getName());
     }
@@ -81,7 +81,7 @@ class TaskServiceImplTest {
     void getTaskByIdNotFound() {
         when(taskRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById("1"));
+        assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById(1));
     }
 
     @Test

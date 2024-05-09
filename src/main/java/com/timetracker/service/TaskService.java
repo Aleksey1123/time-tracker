@@ -8,7 +8,7 @@ public interface TaskService {
 
     Page<TaskDTO> getAllTasks(Integer pageNumber, Integer pageSize, String sortingParam);
 
-    TaskDTO getTaskById(String id);
+    TaskDTO getTaskById(Integer id);
 
     Task saveNewTask(TaskDTO taskDTO);
 

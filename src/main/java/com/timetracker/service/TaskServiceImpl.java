@@ -43,9 +43,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO getTaskById(String id) {
+    public TaskDTO getTaskById(Integer id) {
 
-        Optional<Task> optionalTask = taskRepository.findById(Integer.parseInt(id));
+        Optional<Task> optionalTask = taskRepository.findById(id);
         if (optionalTask.isEmpty())
             throw new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE);
         return optionalTask.map(taskMapper::taskToTaskDTO).get();
