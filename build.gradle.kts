@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
 }
 
 group = "com.time-tracker"
@@ -10,6 +11,7 @@ version = "0.0.1-SNAPSHOT"
 java {
     sourceCompatibility = JavaVersion.VERSION_21
 }
+
 
 repositories {
     mavenCentral()
@@ -25,6 +27,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
 
+
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.0.Beta1")
@@ -34,6 +37,13 @@ dependencies {
 
 }
 
+tasks {
+    forkedSpringBootRun {
+        doNotTrackState("See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102")
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
