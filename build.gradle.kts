@@ -41,7 +41,12 @@ tasks {
     forkedSpringBootRun {
         doNotTrackState("See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102")
     }
+
+    generateOpenApiDocs {
+        outputFileName.set("openapi.yaml")
+    }
 }
+
 
 tasks.withType<Test> {
     useJUnitPlatform()

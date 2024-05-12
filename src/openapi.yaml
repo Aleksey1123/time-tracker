@@ -147,16 +147,6 @@
               }
             }
           },
-          "200": {
-            "description": "New response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": ""
-                }
-              }
-            }
-          },
           "404": {
             "description": "Not Found",
             "content": {
@@ -679,13 +669,13 @@
       "PageTaskDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -732,18 +722,18 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "paged": {
-            "type": "boolean"
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
           },
           "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
             "type": "boolean"
           }
         }
@@ -765,13 +755,13 @@
       "PageEmployeeDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
