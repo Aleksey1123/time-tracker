@@ -16,7 +16,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping
-    public Page<EmployeeDTO> getAllTasks(@RequestParam(required = false) Integer pageNumber,
+    public Page<EmployeeDTO> getAllEmployees(@RequestParam(required = false) Integer pageNumber,
                                          @RequestParam(required = false) Integer pageSize,
                                          @RequestParam(required = false) String sortingParam) {
 
