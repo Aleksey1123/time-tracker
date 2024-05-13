@@ -45,17 +45,17 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDTO getTaskById(Integer id) {
 
-        Optional<Task> optionalTask = taskRepository.findById(id);
-        if (optionalTask.isEmpty())
-            throw new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE);
-        return optionalTask.map(taskMapper::taskToTaskDTO).get();
+        Task foundTask = taskRepository.findById(id).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
+
+        return taskMapper.taskToTaskDTO(foundTask);
     }
 
     @Override
     public Task saveNewTask(TaskDTO taskDTO) {
 
         if (taskRepository.findByName(taskDTO.getName()).isPresent())
-            throw new TaskAlreadyExistsException(TASK_ALREADY_EXISTS_EXC_MESSAGE);
+                throw new TaskAlreadyExistsException(TASK_ALREADY_EXISTS_EXC_MESSAGE);
 
         Task task = taskMapper.taskDTOToTask(taskDTO);
         task.setStartDate(LocalDateTime.now());
@@ -67,19 +67,52 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task deleteTaskById(Integer taskId) {
 
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (taskOptional.isEmpty())
-            throw new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE);
+        Task foundTask = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
         taskRepository.deleteById(taskId);
-        return taskOptional.get();
+
+        return foundTask;
     }
 
     @Override
     public Task updateTaskById(Integer taskId, TaskDTO taskDTO) {
 
-        Task foundTask = taskRepository.findById(taskId).orElseThrow(TaskNotFoundException::new);
+        Task foundTask = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
         foundTask.setName(taskDTO.getName());
         foundTask.setStatus(taskDTO.getStatus());
+
+        return foundTask;
+    }
+
+    @Override
+    public Task startTaskById(Integer taskId) {
+
+        Task foundTask = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
+        foundTask.setStatus(Status.STARTED.name());
+
+        return foundTask;
+    }
+
+    @Override
+    public Task suspendTaskById(Integer taskId) {
+
+        Task foundTask = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
+        foundTask.setStatus(Status.SUSPENDED.name());
+
+        return foundTask;
+    }
+
+    @Override
+    public Task endTaskById(Integer taskId) {
+
+        Task foundTask = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
+        foundTask.setStatus(Status.ENDED.name());
+        foundTask.setEndDate(LocalDateTime.now());
+
         return foundTask;
     }
 }

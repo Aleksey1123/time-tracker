@@ -50,4 +50,25 @@ public class TaskController {
         taskService.updateTaskById(taskId, taskDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping("/startTask/{taskId}")
+    public ResponseEntity<String> startTaskById(@PathVariable Integer taskId) {
+
+        taskService.startTaskById(taskId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/suspendTask/{taskId}")
+    public ResponseEntity<String> suspendTaskById(@PathVariable Integer taskId) {
+
+        taskService.suspendTaskById(taskId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/endTask/{taskId}")
+    public ResponseEntity<String> endTaskById(@PathVariable Integer taskId) {
+
+        taskService.endTaskById(taskId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

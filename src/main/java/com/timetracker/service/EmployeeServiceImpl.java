@@ -4,6 +4,7 @@ import com.timetracker.entity.Employee;
 import com.timetracker.enums.EntityNames;
 import com.timetracker.exception.EmployeeAlreadyExistsException;
 import com.timetracker.exception.EmployeeNotFoundException;
+import com.timetracker.exception.TaskAlreadyExistsException;
 import com.timetracker.exception.TaskNotFoundException;
 import com.timetracker.mapper.EmployeeMapper;
 import com.timetracker.model.EmployeeDTO;
@@ -41,12 +42,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO getEmployeeById(Integer id) {
+    public EmployeeDTO getEmployeeById(Integer employeeId) {
 
-        Optional<Employee> optionalTask = employeeRepository.findById(id);
-        if (optionalTask.isEmpty())
-            throw new TaskNotFoundException(EMPLOYEE_NOT_FOUND_EXC_MESSAGE);
-        return optionalTask.map(employeeMapper::employeeToEmployeeDTO).get();
+        Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(
+                () -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND_EXC_MESSAGE));
+
+        return employeeMapper.employeeToEmployeeDTO(foundEmployee);
     }
 
     @Override
@@ -65,19 +66,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee deleteEmployeeById(Integer employeeId) {
 
-        Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-        if (employeeOptional.isEmpty())
-            throw new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND_EXC_MESSAGE);
+        Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(
+                () -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND_EXC_MESSAGE));
         employeeRepository.deleteById(employeeId);
-        return employeeOptional.get();
+
+        return foundEmployee;
     }
 
     @Override
-    public Employee updateEmployeeById(Integer taskId, EmployeeDTO employeeDTO) {
+    public Employee updateEmployeeById(Integer employeeId, EmployeeDTO employeeDTO) {
 
-        Employee foundEmployee = employeeRepository.findById(taskId).orElseThrow(TaskNotFoundException::new);
+        Employee foundEmployee = employeeRepository.findById(employeeId).orElseThrow(
+                () -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND_EXC_MESSAGE));
         foundEmployee.setFirstName(employeeDTO.getFirstName());
         foundEmployee.setLastName(employeeDTO.getLastName());
+
         return foundEmployee;
     }
 }

@@ -15,4 +15,10 @@ public interface TaskService {
     Task deleteTaskById(Integer taskId);
 
     Task updateTaskById(Integer taskId, TaskDTO taskDTO);
+
+    Task startTaskById(Integer taskId);
+
+    Task suspendTaskById(Integer taskId);
+
+    Task endTaskById(Integer taskId);
 }

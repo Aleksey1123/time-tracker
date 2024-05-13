@@ -133,4 +133,56 @@ class TaskServiceImplTest {
         assertEquals(newDTOTask.getName(), savedTask.getName());
         assertEquals(newDTOTask.getStatus(), savedTask.getStatus());
     }
+
+
+    @Test
+    void startTaskByIdNotFound() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.empty());
+
+        assertThrows(TaskNotFoundException.class, () -> taskService.startTaskById(1));
+    }
+
+    @Test
+    void startTaskById() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+
+        Task startedTask = taskService.startTaskById(1);
+        assertEquals(startedTask.getStatus(), Status.STARTED.name());
+    }
+
+    @Test
+    void suspendTaskByIdNotFound() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.empty());
+
+        assertThrows(TaskNotFoundException.class, () -> taskService.suspendTaskById(1));
+    }
+
+    @Test
+    void suspendTaskById() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+
+        Task startedTask = taskService.suspendTaskById(1);
+        assertEquals(startedTask.getStatus(), Status.SUSPENDED.name());
+    }
+
+    @Test
+    void endTaskByIdNotFound() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.empty());
+
+        assertThrows(TaskNotFoundException.class, () -> taskService.endTaskById(1));
+    }
+
+    @Test
+    void endTaskById() {
+
+        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
+
+        Task startedTask = taskService.endTaskById(1);
+        assertEquals(startedTask.getStatus(), Status.ENDED.name());
+    }
 }
