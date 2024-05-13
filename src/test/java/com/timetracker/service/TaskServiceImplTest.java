@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
@@ -57,12 +56,13 @@ class TaskServiceImplTest {
 
     @Test
     void getAllTasks() {
+
         Page<Task> tasks = new PageImpl<>(List.of(Task.builder().build()));
 
-        when(pageBuilder.buildPageRequest(any(), any(), any(), any()))
-                .thenReturn(PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "id")));
+        given(pageBuilder.buildPageRequest(any(), any(), any(), any()))
+                .willReturn(PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "id")));
 
-        when(taskRepository.findAll((Pageable) any())).thenReturn(tasks);
+        given(taskRepository.findAll((Pageable) any())).willReturn(tasks);
 
         Page<TaskDTO> dtoTasks = taskService.getAllTasks(0, 0, "id");
 
@@ -71,7 +71,8 @@ class TaskServiceImplTest {
 
     @Test
     void getTaskById() {
-        when(taskRepository.findById(1)).thenReturn(Optional.of(testTask));
+
+        given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
         TaskDTO actualTaskDTO = taskService.getTaskById(1);
 
         assertEquals(testTask.getName(), actualTaskDTO.getName());
@@ -79,7 +80,8 @@ class TaskServiceImplTest {
 
     @Test
     void getTaskByIdNotFound() {
-        when(taskRepository.findById(1)).thenReturn(Optional.empty());
+
+        given(taskRepository.findById(1)).willReturn(Optional.empty());
 
         assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById(1));
     }
@@ -107,8 +109,8 @@ class TaskServiceImplTest {
 
         given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
 
-        Task savedTask = taskService.deleteTaskById(1);
-        assertThat(savedTask).isNotNull();
+        Task deletedTask = taskService.deleteTaskById(1);
+        assertThat(deletedTask).isNotNull();
     }
 
     @Test
@@ -122,16 +124,11 @@ class TaskServiceImplTest {
     @Test
     void updateTaskById() {
 
-        TaskDTO newDTOTask = TaskDTO.builder()
-                .name("newTask")
-                .status(Status.STARTED.name())
-                .build();
-
         given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
 
-        Task savedTask = taskService.updateTaskById(1, newDTOTask);
-        assertEquals(newDTOTask.getName(), savedTask.getName());
-        assertEquals(newDTOTask.getStatus(), savedTask.getStatus());
+        Task updatedTask = taskService.updateTaskById(1, testDTOTask);
+        assertEquals(testDTOTask.getName(), updatedTask.getName());
+        assertEquals(testDTOTask.getStatus(), updatedTask.getStatus());
     }
 
 
@@ -165,8 +162,8 @@ class TaskServiceImplTest {
 
         given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
 
-        Task startedTask = taskService.suspendTaskById(1);
-        assertEquals(startedTask.getStatus(), Status.SUSPENDED.name());
+        Task suspendedTask = taskService.suspendTaskById(1);
+        assertEquals(suspendedTask.getStatus(), Status.SUSPENDED.name());
     }
 
     @Test
@@ -182,7 +179,7 @@ class TaskServiceImplTest {
 
         given(taskRepository.findById(1)).willReturn(Optional.of(testTask));
 
-        Task startedTask = taskService.endTaskById(1);
-        assertEquals(startedTask.getStatus(), Status.ENDED.name());
+        Task endedTask = taskService.endTaskById(1);
+        assertEquals(endedTask.getStatus(), Status.ENDED.name());
     }
 }
