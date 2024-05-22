@@ -1,12 +1,18 @@
 package com.timetracker.service;
 
+import com.timetracker.entity.Employee;
+import com.timetracker.entity.History;
 import com.timetracker.entity.Task;
 import com.timetracker.enums.EntityNames;
 import com.timetracker.enums.Status;
+import com.timetracker.exception.EmployeeNotFoundException;
 import com.timetracker.exception.TaskAlreadyExistsException;
 import com.timetracker.exception.TaskNotFoundException;
 import com.timetracker.mapper.TaskMapper;
+import com.timetracker.model.EmployeeDTO;
 import com.timetracker.model.TaskDTO;
+import com.timetracker.repository.EmployeeRepository;
+import com.timetracker.repository.HistoryRepository;
 import com.timetracker.repository.TaskRepository;
 import com.timetracker.sorting.PageBuilder;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +30,11 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final EmployeeRepository employeeRepository;
     private final PageBuilder pageBuilder;
     private final TaskMapper taskMapper = TaskMapper.INSTANCE;
 
+    private static final String EMPLOYEE_NOT_FOUND_EXC_MESSAGE = "employee not found";
     private static final String TASK_NOT_FOUND_EXC_MESSAGE = "task not found";
     private static final String TASK_ALREADY_EXISTS_EXC_MESSAGE = "task already exists, provide a different name";
 
@@ -81,6 +89,25 @@ public class TaskServiceImpl implements TaskService {
                 () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
         foundTask.setName(taskDTO.getName());
         foundTask.setStatus(taskDTO.getStatus());
+
+        return foundTask;
+    }
+
+    @Override
+    public Task delegateTaskById(Integer taskId, EmployeeDTO employeeDTO) {
+
+        Task foundTask = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException(TASK_NOT_FOUND_EXC_MESSAGE));
+
+        Employee foundEmployee = employeeRepository.findByFirstNameAndLastName(
+                employeeDTO.getFirstName(), employeeDTO.getLastName())
+                .orElseThrow(() -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND_EXC_MESSAGE));
+
+        foundTask.addEmployee(foundEmployee);
+        History employeeHistory = foundEmployee.getHistory();
+        employeeHistory.getHistoryList().add(foundTask);
+        employeeHistory.setLastModified(LocalDateTime.now());
+        foundTask.setHistory(employeeHistory);
 
         return foundTask;
     }

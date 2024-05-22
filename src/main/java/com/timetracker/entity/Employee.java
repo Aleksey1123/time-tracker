@@ -28,4 +28,9 @@ public class Employee {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "history_id", referencedColumnName = "id")
     private History history;
+
+    public void addHistory(History history) {
+        this.setHistory(history);
+        history.setEmployee(this);
+    }
 }

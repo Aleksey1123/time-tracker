@@ -1,5 +1,6 @@
 package com.timetracker.controller;
 
+import com.timetracker.model.EmployeeDTO;
 import com.timetracker.model.TaskDTO;
 import com.timetracker.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,14 @@ public class TaskController {
     public ResponseEntity<String> deleteTaskById(@PathVariable Integer taskId) {
 
         taskService.deleteTaskById(taskId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/delegateTask/{taskId}")
+    public ResponseEntity<String> delegateTask(@PathVariable Integer taskId,
+                                               @RequestBody EmployeeDTO employeeDTO) {
+
+        taskService.delegateTaskById(taskId, employeeDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

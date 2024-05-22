@@ -40,6 +40,9 @@ public class Task {
     private History history;
 
     public void addEmployee(Employee employee) {
+        if (assignedEmployees == null)
+            assignedEmployees = new ArrayList<>();
+
         assignedEmployees.add(employee);
         employee.setCurrentTask(this);
     }

@@ -1,6 +1,7 @@
 package com.timetracker.service;
 
 import com.timetracker.entity.Employee;
+import com.timetracker.entity.History;
 import com.timetracker.enums.EntityNames;
 import com.timetracker.exception.EmployeeAlreadyExistsException;
 import com.timetracker.exception.EmployeeNotFoundException;
@@ -59,6 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
         employee.setFirstName(employeeDTO.getFirstName());
         employee.setLastName(employee.getLastName());
+        employee.setHistory(History.builder().build());
 
         return employeeRepository.save(employee);
     }

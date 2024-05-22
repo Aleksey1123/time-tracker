@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,4 +32,12 @@ public class History {
             mappedBy = "history"
     )
     private Employee employee;
+
+    public void addTask(Task task) {
+        if (historyList == null)
+            historyList = new ArrayList<>();
+
+        historyList.add(task);
+        task.setHistory(this);
+    }
 }
